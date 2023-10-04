@@ -1,7 +1,7 @@
 import re
 
 
-def clean_content(soup):
+def clean_content(soup, hash):
     # Get all of the content tags
     content_tags = soup.find_all(["meta", "h1", "h2", "h3", "p", "a"])
 
@@ -27,5 +27,8 @@ def clean_content(soup):
 
     # remove multiple spaces
     spanish_text = re.sub(" +", " ", spanish_text)
+
+    # add the in the beginning of the file and then a tab
+    spanish_text = f"{hash}\t{spanish_text}"
 
     return spanish_text

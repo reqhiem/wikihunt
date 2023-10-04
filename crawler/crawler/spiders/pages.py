@@ -4,7 +4,7 @@ import os
 from bs4 import BeautifulSoup
 import hashlib
 from .utils.postgres_connection import insert_hash_url, get_postgresql_connection
-from .utils.to_markdown import clean_content
+from .utils.content_parser import clean_content
 
 
 class PageSpider(scrapy.Spider):
@@ -24,9 +24,9 @@ class PageSpider(scrapy.Spider):
         hash = hashlib.sha256(current_page_url.encode("UTF-8")).hexdigest()
         file_path = os.path.join(self.save_dir, hash)
         insert_hash_url(hash, current_page_url, doc_title, self.connection)
-        md_content = clean_content(soup)
+        content_file = clean_content(soup, hash)
         with open(file_path, "w", encoding="utf-8") as file:
-            file.write(md_content)
+            file.write(content_file)
 
         for link in links:
             href = link.get("href")
