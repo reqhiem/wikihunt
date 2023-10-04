@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 from scrapy.exceptions import DropItem
 import psycopg2
+import hashlib
 
 
 class DuplicatesPipeline:
@@ -46,9 +47,10 @@ class SaveToPostgresPipeline:
             item["to_"],
         )
         self.cursor.execute(query_first, values)
+
         _values = (
-            item["hash_from_"],
-            item["hash_to_"],
+            hashlib.sha256(item["from_"].encode("UTF-8")).hexdigest(),
+            hashlib.sha256(item["to_"].encode("UTF-8")).hexdigest(),
         )
         query_second = "INSERT INTO from_to_hashes (from_, to_) VALUES (%s, %s)"
         self.cursor.execute(query_second, _values)

@@ -23,9 +23,9 @@ class PageSpider(scrapy.Spider):
 
         hash = hashlib.sha256(current_page_url.encode("UTF-8")).hexdigest()
         file_path = os.path.join(self.save_dir, hash)
-        insert_hash_url(hash, current_page_url, doc_title, self.connection)
         content_file = clean_content(soup, hash)
         with open(file_path, "w", encoding="utf-8") as file:
+            insert_hash_url(hash, current_page_url, doc_title, self.connection)
             file.write(content_file)
 
         for link in links:
@@ -36,10 +36,6 @@ class PageSpider(scrapy.Spider):
                     yield {
                         "from_": current_page_url,
                         "to_": url_valida,
-                        "hash_from_": hash,
-                        "hash_to_": hashlib.sha256(
-                            url_valida.encode("UTF-8")
-                        ).hexdigest(),
                     }
                     yield scrapy.Request(url_valida, callback=self.parse)
 
