@@ -24,9 +24,6 @@ public class HadoopInvertedIndex extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
 
-        System.out.println("HOLA!!!");
-
-        // FileInputFormat.setInputDirRecursive(job, true);
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
