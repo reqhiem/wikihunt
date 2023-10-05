@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './App.css';
 import {
     Input,
@@ -8,23 +9,33 @@ import {
     Heading,
     Text,
 } from '@chakra-ui/react';
+import axios from 'axios';
 
-const data = [
-    {
-        title: 'Computer science',
-        url: 'https://en.wikipedia.org/wiki/Computer_science',
-        description:
-            'Computer science is the study of computation, information, and automation.',
-    },
-    {
-        title: 'Computer engineering',
-        url: 'https://en.wikipedia.org/wiki/Computer_engineering',
-        description:
-            'Computer engineering is the study of computer science and electrical engineering. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem impsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem impsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum. Lorem impsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.',
-    },
-];
+type IResult = {
+    id: string;
+    title: string;
+    url: string;
+    hash: string;
+};
 
 function App() {
+    const [search, setSearch] = useState('');
+    const [results, setResults] = useState<IResult[]>([]);
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+    };
+
+    const handleSubmit = () => {
+        axios
+            .get('http://localhost:5000/api/search', {
+                params: {
+                    query: search,
+                },
+            })
+            .then((res) => {
+                setResults(res.data.results);
+            });
+    };
     return (
         <>
             <Box px={10} my={10}>
@@ -33,15 +44,15 @@ function App() {
                         <span className="text-sky-500	">Wiki</span>
                         <span className="text-gray-400">Hunt</span>
                     </Heading>
-                    <Flex gap={2}>
-                        <Input />
-                        <Button>Search</Button>
+                    <Flex gap={2} my={4}>
+                        <Input type="search" onChange={handleInput} />
+                        <Button onClick={handleSubmit}>Search</Button>
                     </Flex>
-                    <Text className="text-sm text-gray-600" p={1}>
-                        Se muestran {data.length} resultados
+                    <Text className="text-sm text-gray-600" my={4} p={1}>
+                        Se muestran {results.length} resultados
                     </Text>
                     <Box>
-                        {data.map((item, index) => (
+                        {results.map((item, index) => (
                             <Box
                                 key={index}
                                 my={2}
@@ -58,9 +69,6 @@ function App() {
                                 >
                                     {item.url}
                                 </a>
-                                <Text className="truncate">
-                                    {item.description}
-                                </Text>
                             </Box>
                         ))}
                     </Box>
